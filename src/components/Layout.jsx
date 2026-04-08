@@ -1,0 +1,13 @@
+import React from 'react';
+import BottomNav from './BottomNav';
+
+export default function Layout({ children }) {
+  return (
+    <div className="flex flex-col min-h-screen" style={{ backgroundColor: 'var(--bg-primary)' }}>
+      <main className="flex-1 overflow-y-auto pb-20">
+        {children}
+      </main>
+      <BottomNav />
+    </div>
+  );
+}
