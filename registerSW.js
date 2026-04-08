@@ -1,0 +1,1 @@
+if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/peptide-tracker-app/sw.js', { scope: '/peptide-tracker-app/' })})}
