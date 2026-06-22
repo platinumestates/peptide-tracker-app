@@ -3,6 +3,43 @@
   <head>
     <meta charset="UTF-8" />
     <script type="text/javascript">
+      // Self-heal watchdog: if the app shell renders nothing into #root within
+      // 10s, assume a stuck/broken cache (e.g. a stale service worker serving an
+      // old shell) and recover once per session by clearing the SW + caches and
+      // reloading. Guarded by a sessionStorage flag so it can never loop.
+      (function () {
+        var KEY = 'pt_selfheal_done';
+        window.addEventListener('load', function () {
+          setTimeout(function () {
+            var root = document.getElementById('root');
+            if (root && root.childElementCount > 0) {
+              sessionStorage.removeItem(KEY);
+              return;
+            }
+            if (sessionStorage.getItem(KEY)) return;
+            sessionStorage.setItem(KEY, '1');
+            Promise.resolve()
+              .then(function () {
+                if ('serviceWorker' in navigator) {
+                  return navigator.serviceWorker.getRegistrations().then(function (rs) {
+                    return Promise.all(rs.map(function (r) { return r.unregister(); }));
+                  });
+                }
+              })
+              .then(function () {
+                if (window.caches) {
+                  return caches.keys().then(function (ks) {
+                    return Promise.all(ks.map(function (k) { return caches.delete(k); }));
+                  });
+                }
+              })
+              .then(function () { window.location.reload(); })
+              .catch(function () { window.location.reload(); });
+          }, 10000);
+        });
+      })();
+    </script>
+    <script type="text/javascript">
       // Single Page Apps for GitHub Pages — https://github.com/rafgraph/spa-github-pages
       // Restores the original deep-link URL that 404.html encoded into the query
       // string, before React Router reads window.location.
