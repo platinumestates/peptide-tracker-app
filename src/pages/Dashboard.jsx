@@ -43,7 +43,7 @@ export default function Dashboard() {
   const groupedDoses = todaysDoses.reduce((acc, dose) => {
     const peptideId = dose.peptideId;
     if (!acc[peptideId]) {
-      acc[peptideId] = { peptide: state.protocol?.peptides.find(p => p.id === peptideId), doses: [] };
+      acc[peptideId] = { peptide: state.protocol?.peptides?.find(p => p.id === peptideId), doses: [] };
     }
     acc[peptideId].doses.push(dose);
     return acc;
