@@ -7,6 +7,12 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
+      // Ship a self-destroying service worker: it unregisters any previously
+      // installed worker and clears its caches, then gets out of the way so the
+      // app always loads fresh from the network. This recovers users who were
+      // stranded on a stale/broken cached shell (blank screen) without needing
+      // them to manually clear site data.
+      selfDestroying: true,
       registerType: 'autoUpdate',
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
